@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Icon, Label, Modal, Button, Popup, Input } from 'semantic-ui-react';
+import { Icon, Label, Modal, Button, Popup, Input, Table, Menu } from 'semantic-ui-react';
 import "./Message.css";
 
 function Message(){
@@ -24,6 +24,7 @@ function Message(){
 
     const [talkinglist, setTalkingList] = useState([]); // 대화했던 사람들의 목록들
     const [messages, setMessages] = useState([]); // 선택한 사용자와의 대화기록 저장
+    const [recommendmealrecv, setRecommendmealRecv] = useState([]); // 추천받은 음식들 배열로 받기
     const [selectedMessage, setSelectedMessage] = useState(1); // 누구의 대화목록인지 저장.
 
     const [writemessage, setWriteMessage] = useState(); // 사용자가 보내는 쪽지
@@ -83,7 +84,8 @@ function Message(){
             })
             .then((res) => {
               console.log(res.data);
-              setMessages(res.data);
+              setMessages(res.data.message);
+              setRecommendmealRecv(res.data.fooddto);
               setFirstOpen(true);
             })
             .catch((error) => {
@@ -125,6 +127,8 @@ function Message(){
               {talkinglist.map((tlist) => (
                 <li key={tlist.memberseq} onClick={() => handleMessageClick(tlist)} className="message-list-item">
                   {/* 프로필 이미지 */}
+                  <img src={`https://firebasestorage.googleapis.com/v0/b/healthygym-8f4ca.appspot.com/o/files%${selectedMessage.profile}?alt=media`} />
+
                   {/* <img src={selectedMessage.profile} alt="Profile" /> */}
 
                   <div className="message-info-container">
@@ -144,7 +148,7 @@ function Message(){
                       <strong className="nickname">{tlist.nickname}</strong>
 
                       {/* 가장 최근 메시지의 작성일 */}
-                      <span className="message-date">{tlist.wdate}</span>
+                      <span className="message-date right">{tlist.wdate}</span>
                     </div>
 
                     {/* 가장 최근의 메시지 */}
@@ -187,21 +191,136 @@ function Message(){
         }
       };
 
-      // 상세 쪽지 목록
-      const renderModalContent = () => {
+      const renderRecommendMeal = (recommendMeal) => {
 
+        // 렌더링용
+        const breakfastList = recommendMeal.filter((meal) => meal.whenmeal === 1);
+        const lunchList = recommendMeal.filter((meal) => meal.whenmeal === 2);
+        const dinnerList = recommendMeal.filter((meal) => meal.whenmeal === 3);
 
 
         return (
-          <div className="message-container">
+          
+          <div>
+              <Table  style={{ tableLayout: "fixed" }}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell style={{ width: "80px", textAlign: "center"}}>분류</Table.HeaderCell>
+                  <Table.HeaderCell style={{ width: "190px", textAlign: "center" }}>식품명</Table.HeaderCell>
+                  <Table.HeaderCell style={{ width: "100px", textAlign: "center"}}>1회 제공량</Table.HeaderCell>
+                  <Table.HeaderCell style={{ width: "60px", textAlign: "center"}}>Kcal</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+
+                <Table.Body>
+
+                {breakfastList.length > 0 && (
+                  <>
+                    <Table.Row>
+                      <Table.Cell colSpan="4">
+                        <Label ribbon>아침식단</Label>
+                      </Table.Cell>
+                    </Table.Row>
+                    {breakfastList.map((meal, index) => (
+                      <Table.Row key={`${meal.recseq}-${index}`}>
+                      <Table.Cell>{index}</Table.Cell>
+                      <Table.Cell>{meal.desckor}</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.servingwt}g</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.nutrcont1}</Table.Cell>
+                      </Table.Row>
+                    
+                    ))}
+                  </>
+                )}
+
+                {dinnerList.length > 0 && (
+                  <>
+                    <Table.Row>
+                      <Table.Cell colSpan="4">
+                        <Label ribbon>점심식단</Label>
+                      </Table.Cell>
+                    </Table.Row>
+                    {dinnerList.map((meal, index) => (
+                      <Table.Row key={`${meal.recseq}-${index}`}>
+                      <Table.Cell>{index}</Table.Cell>
+                      <Table.Cell>{meal.desckor}</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.servingwt}g</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.nutrcont1}</Table.Cell>
+                      </Table.Row>
+                    
+                    ))}
+                  </>
+                )}
+
+                  {lunchList.length > 0 && (
+                  <>
+                    <Table.Row>
+                      <Table.Cell colSpan="4">
+                        <Label ribbon>저녁식단</Label>
+                      </Table.Cell>
+                    </Table.Row>
+                    {lunchList.map((meal, index) => (
+                      <Table.Row key={`${meal.recseq}-${index}`}>
+                      <Table.Cell>{index}</Table.Cell>
+                      <Table.Cell>{meal.desckor}</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.servingwt}g</Table.Cell>
+                      <Table.Cell style={{ textAlign: "center"}}>{meal.nutrcont1}</Table.Cell>
+                      </Table.Row>
+                    
+                    ))}
+                  </>
+                )}
+
+
+                </Table.Body>
+
+                <Table.Footer>
+                  <Table.Row>
+                    <Table.HeaderCell>3 People</Table.HeaderCell>
+                    <Table.HeaderCell>2 Approved</Table.HeaderCell>
+                    <Table.HeaderCell />
+                    <Table.HeaderCell />
+                  </Table.Row>
+                </Table.Footer>
+              </Table>
+
+            
+          </div>
+        );
+      };
+
+      const renderModalContent = () => {
+        
+        return (
+          <div>
             {messages.map((message) => (
-              <p key={message.msgseq} className={message.memberseq === memberseq ? 'message-receiver' : 'message-sender'}>
-                {message.message}
-              </p>
+              <div key={message.msgseq} >
+                <div  className="message-container">
+                <div className={message.memberseq === memberseq ? 'message-receiver' : 'message-sender'}>
+                <p>{message.message}</p>
+                </div>
+                </div>
+                
+                {/* 추천해준 식단이 있는경우. */}
+                {recommendmealrecv.filter((meal) => meal.msgseq === message.msgseq).length > 0 && (
+                  <div className="recommend-meal-container">
+                    {renderRecommendMeal(recommendmealrecv.filter((meal) => meal.msgseq === message.msgseq))}
+                  </div>
+                )}
+
+              </div>
             ))}
           </div>
         );
       };
+      
+      
+      
+      
+      
+      
+      
+      
       
       // Enter 입력시
       const handleKeyDown = (e) => {
@@ -292,7 +411,7 @@ function Message(){
             className="message-modal2"
             ref={scrollRef}
           >
-            <Modal.Header>"{selectedMessage.nickname}" 님과의 쪽지</Modal.Header>
+            <Modal.Header> <img src={`https://firebasestorage.googleapis.com/v0/b/healthygym-8f4ca.appspot.com/o/files%${selectedMessage.profile}?alt=media`} /> "{selectedMessage.nickname}" 님과의 쪽지</Modal.Header>
             <Modal.Content scrolling>
               {renderModalContent()}
             </Modal.Content>

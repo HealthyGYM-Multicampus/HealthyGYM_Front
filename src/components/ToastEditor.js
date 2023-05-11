@@ -199,8 +199,8 @@ export default function ToastEditor() {
                     <option value={2}>바디갤러리</option>
                     <option value={3}>정보</option>
                     <option value={4}>자유</option>
-                    {/* 추가 */}
                     <option value={11}>식단추천</option>    
+
                 </optgroup>
             </select><br/>
 

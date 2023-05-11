@@ -14,6 +14,10 @@ import readicon from "../asset/icon_readcount.png";
 import doticon from "../asset/icon_dot.png";
 import likeicon from "../asset/icon_like.png";
 import likefilledicon from "../asset/icon_like_filled.png";
+import MealRecommend from './Message/MealRecommend.js';
+
+
+
 
 function ToastViewer() {
     let history = useNavigate();
@@ -23,8 +27,11 @@ function ToastViewer() {
     const [loading, setLoading] = useState(false); // 데이터를 모두 읽어 들일 때까지 rendering을 조절하는 변수
     const [liking, setLiking] = useState(false);      // 로그인한 유저의 좋아요 여부
     const [likecount, setLikecount] = useState(0);  // 게시글의 좋아요 수
+    const [bbstag, setBbstag] = useState(0);      // Bbstag 몇번인지.
 
     const { bbsseq } = useParams();
+
+
 
     useEffect(()=>{
       const s = localStorage.getItem("memberseq");
@@ -36,8 +43,11 @@ function ToastViewer() {
     // 게시글 가져오기
     const detailData = async(seq) => {
         const response = await axios.get('http://localhost:3000/freebbsdetail', { params:{"bbsseq":seq, "memberseq":memberseq} });
-        console.log(memberseq);
-        console.log(JSON.stringify(response.data));
+        // console.log(memberseq);
+        // console.log(JSON.stringify(response.data));
+        setBbstag(response.data[0].bbstag);
+
+        
         setDetail(response.data[0]);
         setLikecount(response.data[0].likecount);
         setLiking(response.data[0].liking);
@@ -116,7 +126,17 @@ function ToastViewer() {
             }}
           }}
         />
+        <br/>
+        {/* 11번 만 보이게 */}
+        {bbstag === 11 && (
+          <div>
+            <MealRecommend detail={detail}/>
+          </div>
+        )}
 
+        
+
+        <br/>
         <span>
           <img alt="thumb" 
             src={liking?likefilledicon:likeicon} 

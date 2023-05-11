@@ -1,9 +1,10 @@
 // 식단공유 작성
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+import { Button, Icon } from 'semantic-ui-react'
 import { Editor } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
@@ -20,35 +21,86 @@ function Meallist() {
 
   let history = useNavigate();
 
-  const [memberseq, setMemberseq] = useState(1);  // 1로 가정 했습니다. // 경고
+  const [memberseq, setMemberseq] = useState(parseInt(localStorage.getItem("memberseq"), 10));  // 1로 가정 했습니다. // 경고
   const bbstag = 10;
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-
-  // login 되어 있는지 검사하고 member_seq 얻기  세션 추가 해야함.
+  const [pageno, setPageno] = useState(1);
 
 
   // Editor DOM 선택용
   const editorRef = useRef();  
 
+  const handleSearch = (searchTerm) => {
+    setSearch(searchTerm);
+    setPageno(1);
+  }
+
   // 공공데이터 포털 API / JSON 형태로 받기
   const SearchMealList = () => {
-    if(search === undefined || search.trim() === ""){
+    if (search === undefined || search.trim() === "") {
       alert("검색어를 입력해주세요");
+      return Promise.reject("검색어를 입력해주세요"); // Promise.reject를 사용하여 실패한 Promise 객체 반환
+    }
+  
+    console.log(search);
+    console.log(pageno);
+  
+    return axios
+      .get("http://localhost:3000/FindMealList", { params: { "search": search, "pageNo": pageno } })
+      .then(function(resp) {
+        console.log(resp);
+        console.log(resp.data);
+  
+        if (resp.data.length === 0) {
+          alert("검색결과가 존재하지 않거나 마지막 페이지입니다.");
+          return Promise.resolve("ex"); // Promise.resolve를 사용하여 성공한 Promise 객체 반환
+        } else {
+          setResult(resp.data);
+          return Promise.resolve(); // Promise.resolve를 사용하여 성공한 Promise 객체 반환
+        }
+      })
+      .catch(function(err) {
+        return Promise.reject(err); // Promise.reject를 사용하여 실패한 Promise 객체 반환
+      });
+  }
+  
+  const leftsearch = () => {
+    if (pageno === 1) {
+      alert("처음 페이지입니다.");
       return;
     }
-    console.log(search);
-    axios.get("http://localhost:3000/FindMealList", { params: { "search":search } })
-    .then(function(resp){
-      console.log(resp);
-      console.log(resp.data);
-      setResult(resp.data);
-    })
-    .catch(function(err){
-      alert(err);
-    })
-  }
+  
+    setPageno(pageno - 1);
+    console.log(pageno);
+    SearchMealList()
+      .then(() => {
+        // 성공적으로 처리됐을 때의 로직 추가
+      })
+      .catch((err) => {
+        // 실패했을 때의 로직 추가
+      });
+  };
+  
+  const rightsearch = () => {
+    setPageno(pageno + 1, () => {
+      console.log(pageno); // 업데이트된 pageno 값을 출력
+    });
+  
+    SearchMealList()
+      .then((result) => {
+        if (result === "ex") {
+          // 반환값이 'ex'인 경우에만 pageno 값을 되돌림
+          setPageno(pageno - 1);
+        }
+      })
+      .catch((err) => {
+        // 실패했을 때의 로직 추가
+      });
+  };
+  
+  
 
   const addToSelectedItems = (item) => {
     setSelectedItems([...selectedItems, item]);
@@ -107,6 +159,8 @@ function Meallist() {
             // console.log("title : " + title);
             // console.log("content : "+ content);
             // console.log("bbstag : " + bbstag);
+            const bbsseq = res.data;
+
             if(selectedItems.length !== 0){
                // DB에 저장하기 위해 선택된 항목들을 JSON으로 담기.
                 const selectedItemsJson = JSON.stringify(selectedItems);
@@ -115,22 +169,20 @@ function Meallist() {
                 headers: {
                   'Content-Type': 'application/json',
                 },
+                params:{
+                  bbsseq: bbsseq  // writemeal1의 반환값
+                }
               })
               .then(response => {
-                if(res.data === "OK"){
-                    alert("성공적으로 등록되었습니다");
-                    history('/mealviews');
-                }else{
-                    alert("등록되지 않았습니다");
-                }
+
               })
               .catch(error => {
                 console.error(error);
               });
             } // 2중 axios 끝
 
-
-            if(res.data === "OK"){
+            console.log(res.data);
+            if(res.data !== 1){
                 alert("성공적으로 등록되었습니다");
                 history('/mealviews');
             }else{
@@ -226,14 +278,20 @@ function Meallist() {
 
 
       <br/> <br/><br/> <br/>
-      <input type="text" value={search} size="30" onChange={(e) => setSearch(e.target.value)} placeholder="검색 리스트" />
+      <input type="text" value={search} size="30" onChange={(e) => handleSearch(e.target.value)} placeholder="검색 리스트" />
 
       <br />
       <br />
 
       <button type="button" onClick={() => SearchMealList()} className="btn btn-primary">검색</button>
 
-      <br />
+      <br /><br />
+
+      <Button icon labelPosition='left' onClick={() => leftsearch()}>
+        <Icon name='left arrow' />
+        Pause
+      </Button>
+
       <div className="d-flex flex-wrap">
         {result.map((item, index) => (
           <div className="card m-2" style={{ width: "200px" }} key={index} onClick={() => addToSelectedItems(item)}>
@@ -244,6 +302,11 @@ function Meallist() {
           </div>
         ))}
       </div>
+
+      <Button icon labelPosition='right' onClick={() => rightsearch()}>
+        Next
+        <Icon name='right arrow' />
+      </Button>
       <p></p>
 
       <div>

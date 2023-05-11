@@ -45,28 +45,43 @@
 
 
 .message-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .message-sender {
-    align-self: flex-start;
-    background-color: #6272ff;
-    color: white;
-    border-radius: 0.3em;
-    padding: 8px;
-    margin-bottom: 2px;
-  }
-  
-  .message-receiver {
-    align-self: flex-end;
-    background-color: #F39C12;
-    color: white;
-    border-radius: 0.3em;
-    padding: 8px;
-    margin-bottom: 2px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.message-sender {
+  align-self: flex-start;
+  background-color: #6272ff;
+  color: white;
+  border-radius: 0.3em;
+  padding: 8px;
+  margin-bottom: 2px;
+}
+
+.message-receiver {
+  align-self: flex-end;
+  background-color: #F39C12;
+  color: white;
+  border-radius: 0.3em;
+  padding: 8px;
+  margin-bottom: 2px;
+}
+
+.recommend-meal-container {
+  margin-top: 8px;
+  margin-bottom: 30px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  text-align: center;
+}
+
+
+
+
+
   
   .message-list-container {
     margin: 20px;
@@ -82,6 +97,7 @@
     align-items: center;
     padding: 10px;
     border: 1px solid #ccc;
+    border-radius: 10px; 
     margin-bottom: 10px;
     cursor: pointer;
   }
@@ -114,20 +130,24 @@
   
   .message-date {
     margin-left: 10px;
+
   }
   
   .last-message {
     font-size: 15px;
     color: #777;
   }
+
+  .right {
+    margin-left: auto;
+  }
   
-  /* 프로필 이미지 스타일을 추가할 경우 */
-  /*
+ /* 프로필 이미지 처리 */
   .message-list-item img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
   }
-  */
+ 
   
