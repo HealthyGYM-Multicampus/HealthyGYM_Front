@@ -1,0 +1,62 @@
+/*전체*/
+.pwdchange-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+    padding: 30px 40px 10px 38px;
+    margin: 30px 400px 50px 350px;
+    justify-content: center;
+    min-width: 400px;
+}
+
+/*비밀번호 변경*/
+.pwdchange-title {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0 0 0;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/*새 비밀번호*/
+.pwdchange-subtitle {
+    font-size: 14px;
+    font-weight: 750;
+    margin-top: 12px;
+    margin-bottom: 5px;
+}
+
+/*비밀번호 수정 가이드*/
+.pwdchange-text1 {
+    font-size: 13px;
+    margin-top: 3px;
+    margin-bottom: 5px;
+}
+
+/*입력란*/
+.pwdchange-input {
+    margin-top: 10px;
+    margin-bottom: 0px;
+    border-style: solid;
+    border-color: #eee;
+    border-width: 1px;
+    border-radius: 5px; /* 테두리를 5px 둥글게 지정 */
+    font-size: 12px;
+    width: 320px;
+    padding: 7px 0 7px 10px;
+    color: #444;
+}
+
+/*버튼*/
+.pwdchange-form-content-btn {
+    background-color: rgb(89, 112, 246);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 9px 0 9px 0;
+    width: 320px;
+    margin-bottom: 30px;
+}

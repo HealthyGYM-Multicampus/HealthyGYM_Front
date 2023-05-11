@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button, Checkbox, Form } from 'semantic-ui-react';
 
 import AuthenticationService from './AuthenticationService';
 
-import kakao from '../../asset/btn_kakao_login.png';
-import google from '../../asset/btn_google_signin.png'
+import { ReactComponent as Kakao } from '../../asset/logo_kakao.svg';
+import { SocialButton, Description } from './authStyle';
+import google from '../../asset/logo_google2.png';
+import logo from '../../asset/logo_gym.png';
 
 export default function Login() {
     const history = useNavigate();
@@ -27,31 +30,36 @@ export default function Login() {
         }else{            
             setCookies("user_id", '');
         }
-    }
+    };
 
     const loginKakao = () => {
-        const KAKAO_CLIENT_id = '42e83bbe9bdc554d4bdc9ef3a4dc7b8a';
-        const KAKAO_REDIRECT_URL = 'http://localhost:9100/login/callback/kakao';
+        const KAKAO_CLIENT_id = process.env.REACT_APP_KAKAO_CLIENT_ID;
+        const KAKAO_REDIRECT_URL = process.env.REACT_APP_KAKAO_REDIRECT_URL;
         const KAKAO_OAUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_id}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code&prompt=login`;
         window.location.href = KAKAO_OAUTH_URL;
-    }
+    };
     const loginGoogle = () => {
-        const GOOGLE_CLIENT_id = '1087556149477-h0s5bq18kpqmk1ndd3vg3vbpkvf6vvn6.apps.googleusercontent.com';
-        const GOOGLE_REDIRECT_URL = 'http://localhost:9100/login/callback/google';
+        const GOOGLE_CLIENT_id = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+        const GOOGLE_REDIRECT_URL = process.env.REACT_APP_GOOGLE_REDIRECT_URL;
         window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_id}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=email profile`;
-    }
+    };
 
     function loginClicked() {
         AuthenticationService
         .executeJwtAuthenticationService(id, pwd)
         .then((res) => {
             //console.log(res.data);
-            AuthenticationService.registerSuccessfulLoginForJwt(res.data.seq, 
-                                                res.data.token.accessToken, 
-                                                res.data.token.refreshToken);
+            AuthenticationService.registerSuccessfulLoginForJwt(res.data.seq, res.data.profile, 
+                                                                res.data.token.accessToken, 
+                                                                res.data.token.refreshToken);
             history('/');
-        }).catch(() =>{
-            alert('로그인 실패');
+        }).catch((error) =>{
+            let msg = "다시 로그인해주세요.";
+            if (error.response && error.response.status === 401) {
+                msg += "(" + error.response.message + ")";
+            }
+            localStorage.clear();
+            alert(msg);
         });
     };
     
@@ -67,29 +75,43 @@ export default function Login() {
     }, [cookies]);
 
     return (
-        <>
-            <input type="email" value={id} onChange={idChange} placeholder="이메일" />
-            <br/>
-            <input type="password" value={pwd} onChange={pwdChange} placeholder="비밀번호" />
-            <br/>
-            <input type="checkbox" checked={saveId} onChange={checkHandler} />
-            <label>아이디 저장</label>
-            <br/>
-            <button type="button" onClick={loginClicked}>로그인</button>
+        <div style={{ width:'300px', margin:'0 210px' }}>
+            <img alt="건강해ZYM" src={logo} style={{ width:"180px", margin: "40px auto", display: "block" }} />
+            <Form>
+                <Form.Field>
+                    <input type="email" value={id} onChange={idChange} placeholder="이메일" />
+                </Form.Field>
+                <Form.Field>
+                    <input type="password" value={pwd} onChange={pwdChange} placeholder="비밀번호" />
+                </Form.Field>
             
-            <div>
-                비밀번호 찾기
-                <Link to="/signup">회원가입</Link>
-            </div>
+                <Form.Field
+                    control={Checkbox}
+                    label='아이디 저장'
+                    checked={saveId} onChange={checkHandler}
+                />
+                
+                <Button style={{ width:'300px', marginBottom:'20px' }} type="button" onClick={loginClicked}>로그인</Button>
+            </Form>
+            
+            <section style={{ textAlign:'center'}}>
 
-            <section>
-                <div>SNS계정으로 간편 로그인/회원가입</div>
+                <Link to="/password">비밀번호 재설정</Link>
+                <span style={{ marginLeft:'20px' }} ></span>
+                <Link to="/signup">회원가입</Link>
+
+
+                <Description style={{ margin:'35px 0 15px 0' }}>SNS계정으로 간편 로그인/회원가입</Description>
                 <div>
-                    <img src={google} alt='google' onClick={loginGoogle} width={300} />
+                    <SocialButton onClick={loginGoogle}>
+                        <img alt='' src={google} width={50}/>
+                    </SocialButton>
+                    <SocialButton onClick={loginKakao}>
+                        <Kakao />
+                    </SocialButton>
                 </div>
-                <img src={kakao} alt='kakao' onClick={loginKakao}/>
                 
             </section>
-        </>
+        </div>
     );
 }

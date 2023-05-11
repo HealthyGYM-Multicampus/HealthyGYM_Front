@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import moment from "moment";
+import { Input, Button } from 'semantic-ui-react';
 
 export default function AuthEmail(props) {
     const [code, setCode] = useState('');
@@ -50,9 +51,9 @@ export default function AuthEmail(props) {
     return (
         <div>
             <p>이메일로 전송된 인증코드를 입력해주세요.</p>
-            <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="인증코드 입력" />
+            <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="인증코드 입력" />
             <span>{countdown}</span>
-            <button type="button" onClick={checkCode}>확인</button>
+            <Button onClick={checkCode}>확인</Button>
             <div>{authMsg}</div>
             <div>
                 이메일을 받지 못하셨나요?

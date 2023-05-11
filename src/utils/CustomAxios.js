@@ -62,7 +62,7 @@ CustomAxios.interceptors.response.use(
             localStorage.clear();
             alert("다시 로그인해주세요. (", error.response.message, ")");
         }
-        if(error.status === 401)
+        
         return Promise.reject(error);
     }
 );

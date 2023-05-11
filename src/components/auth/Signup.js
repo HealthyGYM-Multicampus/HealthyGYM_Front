@@ -1,12 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { Icon, Form, Checkbox, Button, Dropdown } from 'semantic-ui-react';
 import AuthEmail from "./AuthEmail";
+import { Label, Description, SocialButton, Msg } from './authStyle';
+import { ReactComponent as Kakao } from '../../asset/logo_kakao.svg';
+import google from '../../asset/logo_google2.png';
 
 export default function Signup() {
     const [email, setEmail] = useState('');
     const [domain, setDomain] = useState('');
-    const [domainIndex, setDomainIndex] = useState(0);
     const [emailMsg, setEmailMsg] = useState('');
     const [mailKey, setMailKey] = useState('');         // 이메일 인증코드
     const [isLoading, setIsLoading] = useState(false);  // 이메일 발송 중
@@ -41,37 +44,27 @@ export default function Signup() {
         }
     };
 
-    const onChangeDomain = (e) => {
-        const currDomain = e.target.value;
-        setDomain(currDomain);
-
-        if(validateEmail(email, currDomain)) {
-            existsEmail(email, currDomain);
+    const onSelect = (e, { value }) => {
+        setDomain(value);
+        if(validateEmail(email, value)) {
+            existsEmail(email, value);
         }
     };
 
-    const onSelect = (e) => {
-        let selected = e.target.value; 
-        setDomainIndex(selected);
-
-        // 이메일 도메인 직접입력 선택
-        if(selected === "10") {
-            setDomain('');
-            return;
-        }
-        // 이메일 도메인 선택
-        switch (selected) {
-            case "1":   selected = 'naver.com'; break;
-            case "2":   selected = 'gmail.com'; break;
-            case "3":   selected = 'hanmail.net'; break;
-            case "4":   selected = 'daum.net'; break;
-            default:    selected = 'outlook.com'; break;
-        }
-        setDomain(selected);
-        if(validateEmail(email, selected)) {
-            existsEmail(email, selected);
-        }
+    const handleAddition = (e, { value }) => {
+        setOptions((prevState) => {
+          return ([{ key:value, text: value, value:value }, ...prevState]);
+        });
     };
+
+    const [options, setOptions] = useState([
+        { key: '0', text: '직접 입력', value: '0' },
+        { key: 'naver.com', text: 'naver.com', value: 'naver.com' },
+        { key: 'gmail.com', text: 'gmail.com', value: 'gmail.com' },
+        { key: 'hanmail.net', text: 'hanmail.net', value: 'hanmail.net' },
+        { key: 'daum.net', text: 'daum.net', value: 'daum.net' },
+        { key: 'outlook.com', text: 'outlook.com', value: 'outlook.com' }
+    ]);
 
     const validateEmail = (email, domain) => {
         if(email.match(/[a-zA-Z0-9+-\_.]+/) && domain.match(/[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/)) {
@@ -115,8 +108,10 @@ export default function Signup() {
     const onChangeConfirmPwd = (e) => {
         setConfirmPwd(e.target.value);
         if(pwd === e.target.value) {
-            setCheckPwd(true);
             setConfirmPwdMsg('');
+            if(pwd.match(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/)) {
+                setCheckPwd(true);
+            }
         } else {
             setCheckPwd(false);
             setConfirmPwdMsg('비밀번호가 일치하지 않습니다.');
@@ -153,7 +148,7 @@ export default function Signup() {
         .then((res) => {
             //console.log(res.data);
             if(!res.data) {
-                setNicknameMsg('사용 가능한 닉네임입니다.');
+                setNicknameMsg('');
                 setCheckNickname(true);
             } else {
                 setNicknameMsg('이미 사용중인 닉네임입니다.');
@@ -202,7 +197,7 @@ export default function Signup() {
             setIsLoading(false);
         })
         .catch((err) => {
-            alert('error');
+            alert(err);
             setIsLoading(false);
         });
     };
@@ -226,88 +221,128 @@ export default function Signup() {
             }
         })
         .catch((err) => {
-            alert('error');
+            alert(err);
         });
     };
 
+    
+    const loginKakao = () => {
+        const KAKAO_CLIENT_id = process.env.REACT_APP_KAKAO_CLIENT_id;
+        const KAKAO_REDIRECT_URL = process.env.REACT_APP_KAKAO_REDIRECT_URL;
+        const KAKAO_OAUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_id}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code&prompt=login`;
+        window.location.href = KAKAO_OAUTH_URL;
+    };
+    const loginGoogle = () => {
+        const GOOGLE_CLIENT_id = process.env.REACT_APP_GOOGLE_CLIENT_id;
+        const GOOGLE_REDIRECT_URL = process.env.REACT_APP_GOOGLE_REDIRECT_URL;
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_id}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=email profile`;
+    };
+
     return (
-        <>
+        <div style={{ width:'400px', margin:'0 210px' }}>
             <h2>회원가입</h2>
 
-            <section>
-                <div>SNS계정으로 간편 로그인/회원가입</div>
-                
-                
+            <section style={{ textAlign:'center'}}>
+                <Description>SNS계정으로 간편 로그인/회원가입</Description>
+                <div>
+                    <SocialButton onClick={loginGoogle}>
+                        <img alt='' src={google} width={50}/>
+                    </SocialButton>
+                    <SocialButton onClick={loginKakao}>
+                        <Kakao />
+                    </SocialButton>
+                </div>
             </section>
             <hr/>
             <div>
-                <div>
-                    <span>
-                        <label>이메일</label>
-                        <input value={email} onChange={onChangeEmail} disabled={checkAuth} placeholder="이메일" />
-                    </span>
-                    <span>@</span>
-                    <span>
-                        <input value={domain} onChange={onChangeDomain} disabled={domainIndex !== "10" || checkAuth} />
-                        <select value={domainIndex} onChange={onSelect} disabled={checkAuth}>
-                            <option value={0} hidden>선택해주세요</option>
-                            <option value={1}>naver.com</option>
-                            <option value={2}>gmail.com</option>
-                            <option value={3}>hanmail.net</option>
-                            <option value={4}>daum.net</option>
-                            <option value={5}>outlook.com</option>
-                            <option value={10}>직접 입력</option>
-                        </select>
-                </span>
-                    <div>{emailMsg}</div>
-                </div>
-                <div>
-                    <button type="button" onClick={authEmailBtn} disabled={!checkEmail || checkAuth}>
-                        {checkAuth ? <span>이메일 인증 완료</span> : isLoading ? <span>loading</span> : <span>이메일 인증하기</span>}
-                    </button>
-                    {(mailKey !== '') && !checkAuth 
-                    && <AuthEmail mailKey={mailKey} setCheckAuth={setCheckAuth} authEmailBtn={authEmailBtn} />}
-                </div><hr/>
-
-                <div>
-                    <label>비밀번호</label>
-                    <div>영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.</div>
-                    <input type="password" value={pwd} onChange={onChangePwd} placeholder="비밀번호" />
-                    <div>{pwdMsg}</div>
-                </div>
-
-                <div>
-                    <label>비밀번호 확인</label>
-                    <input type="password" value={confirmPwd} onChange={onChangeConfirmPwd} placeholder="비밀번호 확인" />
-                    <div>{confirmPwdMsg}</div>
-                </div><hr/>
-
-                <div>
-                    <label>닉네임</label>
-                    <div>다른 유저와 겹치지 않도록 입력해주세요. (2~15자)</div>
-                    <input value={nickname} onChange={onChangeNickname} placeholder="별명 (2~15자)" />
-                    <div className={checkNickname ? 'success' : 'error'}>{nicknameMsg}</div>
-                </div><hr/>
+                <Form>
+                    <Label>이메일</Label>
+                    <Form.Group widths='equal' style={{ margin: "0em -0.5em"}}>
+                        <Form.Field>
+                            <input value={email} onChange={onChangeEmail} disabled={checkAuth} placeholder="이메일" />
+                        </Form.Field>
+                        <Icon name="at" style={{ margin:'auto 0px'}} />
+                        
+                        <Form.Field>
+                            <Dropdown
+                                options={options}
+                                placeholder='선택해주세요'
+                                search
+                                selection
+                                fluid
+                                allowAdditions
+                                additionLabel=''
+                                onAddItem={handleAddition}
+                                value={domain}
+                                onChange={onSelect}
+                                disabled={checkAuth}
+                            />
+                            
+                        </Form.Field>
+                    </Form.Group>
+                    <Msg>{emailMsg}</Msg>
                 
-                <div>
-                    <label>약관동의</label>
+                    
+                    
+                    <Button type="button" onClick={authEmailBtn} disabled={!checkEmail || checkAuth} style={{ width:"100%"}}>
+                        {checkAuth ? <span>이메일 인증 완료</span> : isLoading ? <Icon loading name='spinner' /> : <span>이메일 인증하기</span>}
+                    </Button>
+                    {(mailKey !== '') && !checkAuth 
+                        && <AuthEmail mailKey={mailKey} setCheckAuth={setCheckAuth} authEmailBtn={authEmailBtn} />}
+                    
+
+                    <Form.Field>
+                        <Label>비밀번호</Label>
+                        <Description>영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.</Description>
+                        <input type="password" value={pwd} onChange={onChangePwd} placeholder="비밀번호" />
+                        <Msg>{pwdMsg}</Msg>
+                    </Form.Field>
+
+                    <Form.Field>
+                        <Label>비밀번호 확인</Label>
+                        <input type="password" value={confirmPwd} onChange={onChangeConfirmPwd} placeholder="비밀번호 확인" />
+                        <Msg>{confirmPwdMsg}</Msg>
+                    </Form.Field>
+
+                    <Form.Field>
+                        <Label>닉네임</Label>
+                        <Description>다른 유저와 겹치지 않도록 입력해주세요. (2~15자)</Description>
+                        <input value={nickname} onChange={onChangeNickname} placeholder="별명 (2~15자)" />
+                        <Msg>{nicknameMsg}</Msg>
+                    </Form.Field>
+                
                     <div>
-                        <input type="checkbox" onChange={checkAll} checked={isAgechecked && isUsechecked} />
-                        <span>전체동의</span>
-                        <input type="checkbox" onChange={() => setIsAgechecked(!isAgechecked)} checked={isAgechecked} />
-                        <span>만 14세 이상입니다 (필수)</span>
-                        <input type="checkbox" onChange={() => setIsUsechecked(!isUsechecked)} checked={isUsechecked} />
-                        <span>이용약관 (필수)</span>
+                        <Label>약관동의</Label>
+                        <div>
+                            <Form.Field
+                                control={Checkbox}
+                                label='전체동의'
+                                onChange={checkAll} checked={isAgechecked && isUsechecked}
+                            />
+                            <Form.Field
+                                control={Checkbox}
+                                label='만 14세 이상입니다 (필수)'
+                                onChange={() => setIsAgechecked(!isAgechecked)} checked={isAgechecked}
+                            />
+                            <Form.Field
+                                control={Checkbox}
+                                label='이용약관 (필수)'
+                                onChange={() => setIsUsechecked(!isUsechecked)} checked={isUsechecked}
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <button type="button" onClick={signupBtn} disabled={!(isAllchecked && checkEmail && checkPwd && checkNickname && checkAuth)}>회원가입하기</button>
-                </div>
-
-                <p>이미 아이디가 있으신가요?</p>
+                
+                    <Button type="button" onClick={signupBtn} style={{ width:"100%"}}
+                        disabled={!(isAllchecked && checkEmail && checkPwd && checkNickname && checkAuth)}>
+                        회원가입하기
+                    </Button>
+                
+                </Form>
+                
+                <span>이미 아이디가 있으신가요?</span>
                 <Link to="/login">로그인</Link>
             </div>
-        </>
+        </div>
     );
 }

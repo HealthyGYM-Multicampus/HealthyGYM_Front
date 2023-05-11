@@ -1,0 +1,148 @@
+/*전체*/
+.edit-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+    padding: 30px 30px 10px 30px;
+    margin: 30px 100px 50px 100px;
+    justify-content: center;
+    min-width: 600px;
+}
+
+/*회원정보수정, 탈퇴하기*/
+.edit-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 10px 60px 8px;
+}
+
+/*회원정보수정*/
+.edit-title {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/*탈퇴하기*/
+.edit-delete-btn {
+    color: tomato;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding-top: 9px;
+}
+
+/*폼 전체*/
+.edit-form-container {
+    display: flex;
+}
+
+/*좌측 라벨 전체*/
+.edit-label {
+    margin-top: 5px;
+}
+
+/*좌측 라벨1*/
+.edit-label-title1 {
+    margin: 0 3px 0 10px;
+    padding: 1px 0 40px 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/*좌측 라벨2*/
+.edit-label-title2 {
+    margin: 0 3px 0 10px;
+    padding: 0 0 55px 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/*우측 폼 전체*/
+.edit-form-content {
+    margin: 0 20px 40px 10px;
+}
+
+/*입력란*/
+.edit-input-email {
+    border-style: solid;
+    border-color: #eee;
+    border-width: 1px;
+    border-radius: 5px; /* 테두리를 5px 둥글게 지정 */
+    font-size: 12px;
+    padding: 7px 0 7px 10px;
+    color: #444;
+    width: 139px;
+}
+
+/*이메일-도메인 분리*/
+.email-domain-container {
+    display: flex;
+}
+
+/*이메일-도메인*/
+.email-domain {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #999;
+}
+
+/**필수항목*/
+.small-text {
+    font-size: 8px;
+    color: #666;
+}
+
+/*입력란*/
+.edit-input {
+    border-style: solid;
+    border-color: #eee;
+    border-width: 1px;
+    border-radius: 5px; /* 테두리를 5px 둥글게 지정 */
+    font-size: 12px;
+    padding: 7px 0 7px 10px;
+    color: #444;
+    width: 300px;
+}
+
+/*입력란*/
+.edit-input-mbti {
+    border-style: solid;
+    border-color: #eee;
+    border-width: 1px;
+    border-radius: 5px; /* 테두리를 5px 둥글게 지정 */
+    font-size: 12px;
+    padding: 7px 0 7px 10px;
+    color: #444;
+}
+
+/*성별 컨테이너*/
+.edit-gender {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 200px;
+}
+
+/*성별 텍스트*/
+.edit-gender-text {
+    font-weight: 500;
+    color: #444;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    padding-top: 2px;
+}
+
+/*버튼*/
+.edit-form-content-btn {
+    background-color: rgb(89, 112, 246);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 9px 70px 9px 70px;
+}
+

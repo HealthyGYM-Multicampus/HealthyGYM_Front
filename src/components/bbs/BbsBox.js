@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment'; // npm i moment react-moment
 import 'moment/locale/ko';
-
+import { Icon } from 'semantic-ui-react';
 import readicon from "../../asset/icon_readcount.png";
-import likeicon from "../../asset/icon_like.png";
-import commenticon from "../../asset/icon_comment.png";
-import clockicon from "../../asset/icon_clock.png";
 import styled from 'styled-components';
+import { ImgLayer, InfoDiv, TitleLink } from './bbsStyle';
 
 export default function BbsBox(props) {
     const [imgNum, setImgNum] = useState(0);
@@ -24,8 +22,9 @@ export default function BbsBox(props) {
     
     return (
         <div>
-            <div style={{ height:'80px', position:'relative'}}>
-                <Link to={`/viewer/${props.data.bbsseq}`}>{props.data.title}</Link>
+            <div style={{ position:'relative'}}>
+
+                <TitleLink to={`/view/${props.data.bbsseq}`}>{props.data.title}</TitleLink>
                 <p>{props.data.nickname}</p>
 
                 <span style={{ position:'absolute', top:'0', right:'0'}}>
@@ -33,8 +32,8 @@ export default function BbsBox(props) {
                         <img 
                             src={`https://firebasestorage.googleapis.com/v0/b/healthygym-8f4ca.appspot.com/o/files%${props.data.thumnail}?alt=media`} 
                             alt=''
-                            width={80}
-                            height={80}/>
+                            width={70}
+                            height={70}/>
                     }
                     {imgNum > 1 &&
                         <ImgLayer>
@@ -44,35 +43,24 @@ export default function BbsBox(props) {
                 </span>
             </div>
             
-            <div>
+            <InfoDiv>
                 <span>
-                    <img alt='' src={readicon} width={15} />
-                    {props.data.readcount}
+                    <Icon name='eye' size='tiny' />
+                    <span>{props.data.readcount}</span>
                 </span>
                 <span>
-                    <img alt='' src={likeicon} width={15} />
-                    {props.data.likecount}
+                    <Icon name='thumbs up outline' size='tiny' />
+                    <span>{props.data.likecount}</span>
                 </span>
                 <span>
-                    <img alt='' src={commenticon} width={15} />
-                    {props.data.cmtcount}
+                    <Icon name='comment outline' size='tiny' />
+                    <span>{props.data.cmtcount}</span>
                 </span>
                 <span>
-                    <img alt='' src={clockicon} width={15} />
+                    <Icon name='clock outline' size='tiny' />
                     <Moment fromNow>{props.data.wdate}</Moment>
                 </span>
-            </div>
+            </InfoDiv>
         </div>
     );
 }
-
-const ImgLayer = styled.div`
-    position: absolute;
-    top: 0;
-    text-align: center;
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    background: rgba(0,0,0,0.5);
-    color: white;
-`

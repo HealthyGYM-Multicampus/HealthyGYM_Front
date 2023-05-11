@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../utils/CustomAxios';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from "styled-components"; // npm i styled-components
-
 import BbsBox from './BbsBox';
 import useInfiniteScroll from '../../utils/useInfiniteScroll';
+import BbsNav from './BbsNav';
+import { BbsWrapper } from './bbsStyle';
+import { Loader } from 'semantic-ui-react';
+import { Description } from '../auth/authStyle';
 
 export default function BbsList() {
 
@@ -44,27 +47,10 @@ export default function BbsList() {
             await getBbs()
         }
     })
-    
+
     return (
         <div>
-            <div>
-                <Link to="/topics/0">토픽 베스트</Link>
-                &nbsp;&nbsp;&nbsp;
-                <Link to="/topics/1">운동루틴</Link>
-                &nbsp;&nbsp;&nbsp;
-                <Link to="/topics/2">바디갤러리</Link>
-                &nbsp;&nbsp;&nbsp;
-                <Link to="/topics/3">정보게시판</Link>
-                &nbsp;&nbsp;&nbsp;
-                <Link to="/topics/4">자유게시판</Link>
-                &nbsp;&nbsp;&nbsp;
-                <Link to="/topics/11">식단추천게시판</Link>
-                &nbsp;&nbsp;&nbsp;
-                <select value={order} onChange={(e) => setOrder(e.target.value)}>
-                    <option value='wdate'>최신순</option>
-                    <option value='likecount desc, wdate'>추천순</option>
-                </select>
-            </div>
+            <BbsNav setOrder={setOrder} order={order} />
 
             <BbsWrapper>
                 {bbsList.map((bbs, i) => (
@@ -72,22 +58,10 @@ export default function BbsList() {
                 ))}
             </BbsWrapper>
 
-            {isLoading && <p>Loading</p>}
-            {hasMore ? <div ref={target}>target</div> : null}
+            {isLoading && hasMore && <><br/><Loader active inline='centered' /></>}
+            {hasMore ? 
+                <div ref={target}>target</div> : 
+                <Description><br/>마지막 게시글입니다.</Description>}
         </div>
     );
 }
-
-const BbsWrapper = styled.div`
-    &>div {
-        display: inline-block; 
-        box-sizing: border-box;
-        width: 50%;
-        border-bottom: 1px solid lightgray;
-    }
-    &>div:nth-child(2n+1) {
-        border-right: 1px solid lightgray;
-    }
-`
-
-

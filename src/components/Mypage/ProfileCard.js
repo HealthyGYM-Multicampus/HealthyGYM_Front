@@ -1,116 +1,91 @@
-import {Link} from "react-router-dom";
-import "./MyPage.css";
-import {useEffect, useState} from "react";
+import {Link, Route, Routes} from "react-router-dom";
+import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
 import Follower from "./Follower";
 import Following from "./Following";
+import "./ProfileCard.css";
+import Profile from "./Profile";
+import BodyCom from "./BodyCom";
 
 function ProfileCard() {
-    const [member, setMember] = useState([]);
-
-    // 팔로우 유저 리스트
-    // const [follow, setFollow] = useState([]);
-    // const [follower, setFollower] = useState([]);
-
+    const [member, setMember] = useState({});
     const [followNum, setFollowNum] = useState(0);
     const [followerNum, setFollowerNum] = useState(0);
 
+    const authToken = localStorage.getItem("memberseq");
+    const token = useMemo(() => ({memberseq: authToken}), [authToken]);
+
     useEffect(() => {
-        axios.get('http://localhost:3000/members/findmember')
+        // member 정보 가져오기
+        axios
+            .post("http://localhost:3000/members/findmember", token)
             .then((response) => {
                 setMember(response.data);
-
-                // 데이터 확인용
-                console.log(response.data);
             })
             .catch((error) => {
                 console.error(error);
             });
-    }, []);
+    }, [token]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/members/follow')
+        // following 정보 가져오기
+        axios
+            .post("http://localhost:3000/members/follow", token)
             .then((response) => {
-                //setFollow(response.data.followDtoList);
                 setFollowNum(response.data.followNum);
-
-                // 데이터 확인용
-                console.log(response.data.followDtoList);
-                console.log(response.data.followNum);
-                console.log(response.data);
             })
             .catch((error) => {
                 console.error(error);
             });
-    }, []);
+    }, [token]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/members/follower')
+        // follower 정보 가져오기
+        axios
+            .post("http://localhost:3000/members/follower", token)
             .then((response) => {
-                //setFollower(response.data.followDtoList);
                 setFollowerNum(response.data.followerNum);
-
-                // 데이터 확인용
-                console.log(response.data.followDtoList);
-                console.log(response.data.followerNum);
-                console.log(response.data);
             })
             .catch((error) => {
                 console.error(error);
             });
-    }, []);
-
-    const [isFollowerOpen, setIsFollowerOpen] = useState(false);
-    const [isFollowingOpen, setIsFollowingOpen] = useState(false);
-
-    const followerOpen = () => {
-        setIsFollowerOpen(true);
-        setIsFollowingOpen(false);
-    };
-
-    const followingOpen = () => {
-        setIsFollowerOpen(false);
-        setIsFollowingOpen(true);
-    };
+    }, [token]);
 
     return (
-        <div>
-            <ul>
-                <li>
-                    <hr></hr>
-                    <h3>Profile Card</h3>
-
-
-                    <li>
-                        <img
-                            src={`http://localhost:3000/images/${member.profile}`}
-                            alt="프로필 이미지"
-                            width="90"
-                            height="90"
-                        />
-                    </li>
-                </li>
-                <li>
-                    <div>닉네임 : {member.nickname}</div>
-                </li>
-                {/*<li><Link to="/mypage/follower">팔로워 {followerNum}</Link></li>*/}
+        <div className="mypage-container-01">
+            <div className="profile-card">
+                <img
+                    src={`http://localhost:3000/images/profile/${member.profile}`}
+                    alt="프로필 이미지"
+                    width="90"
+                    height="90"
+                />
+                <div className='profile-card-nickname'>{member.nickname}</div>
                 <div>
-                    <li>
-                        <Link onClick={followerOpen}>팔로워 {followerNum}</Link>
-                    </li>
-
+                    <div className='profile-card-follow'>
+                        <Link to="/mypage/profilecard/follower" className='profile-card-follow-02'>
+                            팔로워<b className='profile-card-follow-01'>{followerNum}</b>
+                        </Link>
+                        <div className='profile-card-text-01'>|</div>
+                        <Link to="/mypage/profilecard/following" className='profile-card-follow-02'>
+                            팔로잉<b className='profile-card-follow-01'>{followNum}</b>
+                        </Link>
+                    </div>
                 </div>
-                {/*<li><Link to="/mypage/following">팔로잉 {followNum}</Link></li>*/}
-                <li>
-                    <Link onClick={followingOpen}>팔로잉 {followNum}</Link>
-                </li>
-                <li><Link to="/mypage/setting">설정</Link></li>
-                {isFollowerOpen && <Follower setIsFollowerOpen={setIsFollowerOpen}/>}
-                {isFollowingOpen && <Following setIsFollowingOpen={setIsFollowingOpen}/>}
-                <hr></hr>
-            </ul>
+                <Link to="/mypage/setting/editprofile" className="setting-btn">
+                    설정
+                </Link>
+            </div>
+            <div className='connect'>
+                <Routes>
+                    <Route path="profile" element={<Profile/>}/>
+                    <Route path="bodycom" element={<BodyCom/>}/>
+                    <Route path="follower" element={<Follower/>}/>
+                    <Route path="following" element={<Following/>}/>
+                </Routes>
+            </div>
         </div>
-    )
+    );
 }
 
 export default ProfileCard;

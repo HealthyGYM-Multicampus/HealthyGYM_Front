@@ -21,17 +21,23 @@ export default function LoginCallback() {
 
             if (res.data.provider === provider) {
 
-                AuthenticationService.registerSuccessfulLoginForJwt(res.data.seq,
-                                                    res.data.token.accessToken, 
-                                                    res.data.token.refreshToken);
+                AuthenticationService.registerSuccessfulLoginForJwt(res.data.seq, res.data.profile, 
+                                                                    res.data.token.accessToken, 
+                                                                    res.data.token.refreshToken);
                 history("/");
             } else {
                 const provider = res.data.provider;
                 alert(provider, "로 가입된 이메일입니다.");
-                history("/");
+                history("/login");
             }
-        }).catch(function(err){
-            alert(err);
+        }).catch(function(error){
+            let msg = "다시 로그인해주세요.";
+            if (error.response && error.response.status === 401) {
+                msg += "(" + error.response.message + ")";
+            }
+            localStorage.clear();
+            alert(msg);
+            history("/login");
         });
     }, []);
 

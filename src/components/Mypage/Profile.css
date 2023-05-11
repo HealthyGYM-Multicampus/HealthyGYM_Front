@@ -1,0 +1,24 @@
+.profile-container-01 {
+    margin-left: 80px;
+    margin-top: 40px;
+    width: 560px;
+}
+
+.profile-container-box {
+    border: 1px dashed #ccc;
+    padding: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.profile-container-box-01{
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.profile-container-box-02{
+    font-size: 18px;
+    font-weight: normal;
+}

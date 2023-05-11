@@ -1,0 +1,5 @@
+.setting-nav {
+    display: flex;
+    flex-direction: column;
+    margin: 23px 1px 30px 100px;
+}

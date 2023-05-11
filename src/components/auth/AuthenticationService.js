@@ -16,12 +16,13 @@ class AuthenticationService {
     }
 
     // 로그인 성공 후 설정
-    registerSuccessfulLoginForJwt(memberseq, accessToken, refreshToken) {
+    registerSuccessfulLoginForJwt(memberseq, profile, accessToken, refreshToken) {
         console.log("===registerSuccessfulLoginForJwt===")
         const expireDate = new Date().setDate(new Date().getDate() + 7);
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('memberseq', memberseq);
+        localStorage.setItem('profile', profile);
         localStorage.setItem("expiresAt",
             moment().add(30, "minute").format("YYYY-MM-DDTHH:mm:ss.SSS")
         );
