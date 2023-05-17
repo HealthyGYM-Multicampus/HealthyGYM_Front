@@ -7,8 +7,8 @@ function FollowBtn({foltarget}) {
 
     const authToken = localStorage.getItem("memberseq");
     const newtoken = useMemo(() => ({memberseq: authToken}), [authToken]);
-    const [preventMe, setPreventMe] = useState(false);
-    const [userFollow, setUserFollow] = useState(false);
+    const [preventMe, setPreventMe] = useState(true);
+    const [userFollow, setUserFollow] = useState(true);
 
     useEffect(() => {
 
